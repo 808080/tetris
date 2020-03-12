@@ -21,3 +21,5 @@ var myGameArea = {
 }
 
 var test = 'test';
+
+let a = 1;
