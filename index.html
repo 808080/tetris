@@ -4,10 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body{
+            margin: auto;
+            width: 300px;
+        }
+        #run{
+            display: block;
+            margin: auto;
+        }
+        #field{
+            display: block;
+            margin: auto;
+            border: solid 1px sienna;
+        }
+    </style>
 </head>
-<body onload="startGame()">
+<body>
     <label for="velocity">Initial velocity (from 1 to 10):</label>
     <input type="range" id="velocity" name="velocity" min="1" max="10">
+    <button id="run">Start</button>
+    <canvas id="field"></canvas>
 
     <script src="script.js"></script>
 </body>
