@@ -174,14 +174,18 @@ const velocityBar = document.getElementById('velocity');
 const KOROBEINIKI = new Audio('Tetris.mp3');
 KOROBEINIKI.loop = true;
 
+
 let score = 0;
-let best = 0;
+let best = localStorage.getItem('highScore');
 let reset;
 let velocity;
+
 
 const COLS = 10;
 const ROWS = 20;
 const BLOCK = 30;
+
+bestScore.innerHTML = best;
 
 
 canvas.width = COLS * BLOCK;
@@ -376,6 +380,7 @@ class Piece {
           // board[this.y + r][this.x + c] = this.color;
           best = Math.max(best, score);
           bestScore.innerHTML = best;
+          localStorage.setItem('highScore', best);
           clearInterval(levelTimer);
           KOROBEINIKI.pause();
           velocityBar.disabled = false;
@@ -429,6 +434,7 @@ class Piece {
       curScore.innerHTML = score;
       best = Math.max(best, score);
       bestScore.innerHTML = best;
+      localStorage.setItem('highScore', best);
     }
     
     drawBoard();
