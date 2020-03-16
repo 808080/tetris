@@ -172,6 +172,7 @@ const level = document.getElementById('level');
 const velocityBar = document.getElementById('velocity');
 
 const KOROBEINIKI = new Audio('Tetris.mp3');
+KOROBEINIKI.loop = true;
 
 let score = 0;
 let best = 0;
@@ -380,7 +381,7 @@ class Piece {
           velocityBar.disabled = false;
           velocity = level.innerHTML = velocityBar.value;
           alert('Game Over');
-          play();
+          // play();
           break;
         }
        
@@ -491,6 +492,7 @@ function play() {
   }
   if(gameOver || firstTry || reset){
     velocityBar.disabled = true;
+    KOROBEINIKI.currentTime = 0;
     KOROBEINIKI.play();
     levelTimer = setInterval(speedUp, 30000);
     
