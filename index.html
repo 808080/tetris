@@ -4,28 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
     <style>
-        body{
-            margin: auto;
-            width: 300px;
+        .grid {
+            display: grid;
+            grid-template-columns: 320px 200px;
         }
-        #run{
-            display: block;
-            margin: auto;
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        #field{
-            display: block;
-            margin: auto;
-            border: solid 1px sienna;
+
+        #board{
+            border: solid 2px;
+        }
+
+        .play-button {
+            font-size: 16px;
+            padding: 15px 30px;
         }
     </style>
 </head>
 <body>
-    <label for="velocity">Initial velocity (from 1 to 10):</label>
-    <input type="range" id="velocity" name="velocity" min="1" max="10">
-    <button id="run">Start</button>
-    <canvas id="field"></canvas>
-
+    <div class="grid">
+        <canvas id="board"></canvas>
+        <div class="right-column">
+          <div>
+            <h1>TETRIS</h1>
+            <p>Best Score: <span id="best">0</span></p>
+            <p>Score: <span id="score">0</span></p>
+            <p>Level: <span id="level">0</span></p>
+            <label for="velocity">Initial level (from 1 to 10):</label>
+            <input type="range" id="velocity" name="velocity" min="1" max="10">
+          </div>
+          <button onclick="play()" class="play-button">Play</button>
+        </div>
+      </div>
     <script src="script.js"></script>
 </body>
 </html>
