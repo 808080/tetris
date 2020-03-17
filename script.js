@@ -171,9 +171,14 @@ const curScore = document.getElementById('score');
 const bestScore = document.getElementById('best');
 const level = document.getElementById('level');
 const velocityBar = document.getElementById('velocity');
+const pauseBtn = document.getElementById('pause');
+const muteBtn = document.getElementById('mute');
 
-const KOROBEINIKI = new Audio('Tetris.mp3');
+
+const KOROBEINIKI = new Audio('sounds/Tetris.mp3');
 KOROBEINIKI.loop = true;
+const lineSound = new Audio('sounds/line.wav');
+const endSound = new Audio('sounds/gameover.wav');
 
 
 let score = 0;
@@ -388,6 +393,8 @@ class Piece {
     for(r = 0; r < this.curState.length; r++){
       for(c = 0; c < this.curState.length; c++){
         if(gameOver){
+          // window.cancelAnimationFrame(frame);
+          endSound.play();
           best = Math.max(best, score);
           bestScore.innerHTML = best;
           localStorage.setItem('highScore', best);
@@ -395,7 +402,6 @@ class Piece {
           KOROBEINIKI.pause();
           velocityBar.disabled = false;
           velocity = level.innerHTML = velocityBar.value;
-          window.cancelAnimationFrame(frame);
           window.requestAnimationFrame(overMessage);
           break;
         }
@@ -439,6 +445,7 @@ class Piece {
     }
     // console.log(mult);
     if(mult){
+      lineSound.play();
       score += 100 * 2**(mult-1);
       // console.log(score);
       curScore.innerHTML = score;
@@ -453,7 +460,7 @@ class Piece {
 
 
 document.addEventListener('keydown', (e) => {
-  if(!gameOver) move(e);
+  if(!firstTry && !gameOver && !gamePaused) move(e);
 });
 
 function move(e) {
@@ -521,8 +528,47 @@ function init() {
     currentPiece.down();
     start = Date.now();
   }
-  if(!gameOver) frame = window.requestAnimationFrame(init);
+  if(!gameOver) frame = requestAnimationFrame(init);
 }
+
+let gamePaused = false;
+
+pauseBtn.addEventListener('click', () => {
+  if(!firstTry && !gameOver) pause();
+});
+
+function pause() {
+  if(!gamePaused){
+    cancelAnimationFrame(frame);
+    KOROBEINIKI.pause();
+    gamePaused = true;
+    pauseBtn.innerHTML = 'Resume';
+  } else {
+    requestAnimationFrame(init);
+    KOROBEINIKI.play();
+    gamePaused = false;
+    pauseBtn.innerHTML = 'Pause';
+  }
+  // console.log(gamePaused);
+}
+
+let muted = false;
+muteBtn.addEventListener('click', () => {
+  if(!muted){
+    KOROBEINIKI.muted = true;
+    lineSound.muted = true;
+    endSound.muted = true;
+    muted = true;
+    muteBtn.innerHTML = "&#128264";
+  } else {
+    KOROBEINIKI.muted = false;
+    lineSound.muted = false;
+    endSound.muted = false;
+    muted = false;
+    muteBtn.innerHTML = "&#128266";
+  } 
+});
+
 
 function speedUp() {
   if(velocity <= 10){
@@ -536,12 +582,17 @@ function play() {
     reset = confirm('Reset?');
   }
   if(gameOver || firstTry || reset){
-    getTetromino();
+    gamePaused = false;
+    cancelAnimationFrame(frame);
 
     velocityBar.disabled = true;
     KOROBEINIKI.currentTime = 0;
     KOROBEINIKI.play();
-    levelTimer = setInterval(speedUp, 30000);
+
+    clearInterval(levelTimer);
+    levelTimer = setInterval(() => {
+      if(!gamePaused) speedUp();
+    }, 30000);
     
     firstTry = false;
     gameOver = false;
@@ -549,6 +600,8 @@ function play() {
     score = 0;
     curScore.innerHTML = score;
     resetBoard();
+    getTetromino();
+
     init();
   }
 }

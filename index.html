@@ -29,6 +29,11 @@
             width: 100%;
             margin: 10px 0;
         }
+        .mute-button{
+          float: right;
+          padding: 7px;
+          width: auto;
+        }
     </style>
 </head>
 <body>
@@ -36,6 +41,7 @@
         <canvas id="board"></canvas>
         <div class="right-column">
           <div>
+            <button id="mute" class="mute-button">&#128266</button>
             <h1>TETRIS</h1>
             <h3>Next shape:</h3>
             <canvas id="next"></canvas>
@@ -46,7 +52,7 @@
             <input type="range" id="velocity" name="velocity" min="1" max="10">
           </div>
           <div>
-            <!-- <button id="pause" class="pause-button">Pause</button> -->
+            <button id="pause" class="pause-button">Pause</button>
             <button onclick="play()" class="play-button">Play</button>
           </div>
         </div>
