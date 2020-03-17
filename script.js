@@ -164,6 +164,9 @@ const blockBorder = '#ccc';
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 
+const nextCanvas = document.getElementById('next');
+const ctxNext = nextCanvas.getContext('2d');
+
 const curScore = document.getElementById('score');
 const bestScore = document.getElementById('best');
 const level = document.getElementById('level');
@@ -179,9 +182,12 @@ let reset;
 let velocity;
 let gameOver = false;
 let firstTry = true;
+let frame;
+
+let currentPiece;
+let nextPiece;
 
 let levelTimer;
-
 
 const COLS = 10;
 const ROWS = 20;
@@ -193,10 +199,12 @@ bestScore.innerHTML = best;
 canvas.width = COLS * BLOCK;
 canvas.height = ROWS * BLOCK;
 
+nextCanvas.width = 4 * BLOCK;
+nextCanvas.height = 4 * BLOCK;
+
 velocity = level.innerHTML = velocityBar.value = 1;
 velocityBar.addEventListener('input', () => {
   velocity = level.innerHTML = velocityBar.value;
-  
 });
 
 
@@ -204,13 +212,8 @@ function randomize() {
   return Math.floor(Math.random() * tetrominoes.length);
 }
 
-function getTetromino() {
-  let rndShape = tetrominoes[randomize()];
-  let rndColor = colors[randomize()];
-  return new Piece(rndShape, rndColor);
-}
 
-function drowBlock(x, y, color, border){
+function drowBlock(ctx, x, y, color, border){
   ctx.fillStyle = color;
   ctx.fillRect(x*BLOCK, y*BLOCK, BLOCK, BLOCK);
   ctx.strokeStyle = border;
@@ -228,7 +231,7 @@ for(r = 0; r < ROWS; r++){
 function drawBoard(){
   for(r = 0; r < ROWS; r++){
     for(c = 0; c < COLS; c++){
-      drowBlock(c,r,board[r][c], blockBorder);
+      drowBlock(ctx, c,r,board[r][c], blockBorder);
     }
   }
 }
@@ -239,10 +242,10 @@ function resetBoard() {
   for(r = 0; r < ROWS; r++){
     for(c = 0; c < COLS; c++){
       board[r][c] = empty;
-      drowBlock(c,r,board[r][c], blockBorder);
+      drowBlock(ctx, c,r,board[r][c], blockBorder);
     }
   }
-  currentPiece = getTetromino();
+  getTetromino();
 }
 
 function overMessage() {
@@ -275,7 +278,7 @@ class Piece {
     for(r = 0; r < this.curState.length; r++){
       for(c = 0; c < this.curState.length; c++){
         if(this.curState[r][c]){
-            drowBlock(this.x + c, this.y + r, color, blockBorder);
+            drowBlock(ctx, this.x + c, this.y + r, color, blockBorder);
         }
       }
     }
@@ -298,7 +301,7 @@ class Piece {
       this.add();
     }else{
       this.lock();
-      currentPiece = getTetromino();
+      getTetromino();
     }
   }
 
@@ -324,7 +327,7 @@ class Piece {
       this.y += 0.1;
     }
     this.lock();
-    currentPiece = getTetromino();
+    getTetromino();
   }
 
   rotate(){
@@ -392,6 +395,7 @@ class Piece {
           KOROBEINIKI.pause();
           velocityBar.disabled = false;
           velocity = level.innerHTML = velocityBar.value;
+          window.cancelAnimationFrame(frame);
           window.requestAnimationFrame(overMessage);
           break;
         }
@@ -478,7 +482,35 @@ function move(e) {
     e.preventDefault();
 }
 
-let currentPiece = getTetromino();
+
+function nextTetromino() {
+  let rndShape = tetrominoes[randomize()];
+  let rndColor = colors[randomize()];
+  return new Piece(rndShape, rndColor);
+}
+
+nextPiece = nextTetromino();
+
+function drawNext() {
+  ctxNext.fillStyle = empty;
+  ctxNext.fillRect(0,0,4 * BLOCK,4 * BLOCK);
+  for(r = 0; r < nextPiece.curState.length; r++){
+    for(c = 0; c < nextPiece.curState.length; c++){
+      if(nextPiece.curState[r][c]){
+        drowBlock(ctxNext, c, r, nextPiece.color, blockBorder);
+      }
+    }
+  }
+}
+
+function getTetromino(){
+  currentPiece = nextPiece;
+  nextPiece = nextTetromino();
+  drawNext();
+  // console.log(currentPiece);
+  // console.log(nextPiece);
+}
+
 
 let start = Date.now();
 
@@ -489,7 +521,7 @@ function init() {
     currentPiece.down();
     start = Date.now();
   }
-  if(!gameOver) window.requestAnimationFrame(init);
+  if(!gameOver) frame = window.requestAnimationFrame(init);
 }
 
 function speedUp() {
@@ -504,6 +536,8 @@ function play() {
     reset = confirm('Reset?');
   }
   if(gameOver || firstTry || reset){
+    getTetromino();
+
     velocityBar.disabled = true;
     KOROBEINIKI.currentTime = 0;
     KOROBEINIKI.play();
@@ -517,5 +551,4 @@ function play() {
     resetBoard();
     init();
   }
-
 }

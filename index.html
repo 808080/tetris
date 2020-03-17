@@ -16,11 +16,10 @@
             flex-direction: column;
             justify-content: space-between;
         }
-
         #board{
             border: solid 2px;
         }
-
+        
         button {
             display: block;
             font-size: 16px;
@@ -38,6 +37,8 @@
         <div class="right-column">
           <div>
             <h1>TETRIS</h1>
+            <h3>Next shape:</h3>
+            <canvas id="next"></canvas>
             <p>Best Score: <span id="best">0</span></p>
             <p>Score: <span id="score">0</span></p>
             <p>Level: <span id="level">0</span></p>
