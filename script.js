@@ -74,10 +74,8 @@ const tetrominoes = [
 
   [//O
     [
-      [0, 1, 1, 0],
-      [0, 1, 1, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
+      [1, 1],
+      [1, 1]
     ]
   ],
 
@@ -179,6 +177,10 @@ let score = 0;
 let best = localStorage.getItem('highScore');
 let reset;
 let velocity;
+let gameOver = false;
+let firstTry = true;
+
+let levelTimer;
 
 
 const COLS = 10;
@@ -224,7 +226,7 @@ for(r = 0; r < ROWS; r++){
 }
 
 function drawBoard(){
-  for( r = 0; r < ROWS; r++){
+  for(r = 0; r < ROWS; r++){
     for(c = 0; c < COLS; c++){
       drowBlock(c,r,board[r][c], blockBorder);
     }
@@ -243,23 +245,34 @@ function resetBoard() {
   currentPiece = getTetromino();
 }
 
+function overMessage() {
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(2*BLOCK, 2*BLOCK, 6*BLOCK, 5*BLOCK);
+  ctx.font = "34px Arial";
+  ctx.fillStyle = empty;
+  ctx.textAlign = "center";
+  ctx.fillText("Game", 5*BLOCK, 4*BLOCK);
+  ctx.fillText("Over", 5*BLOCK, 6*BLOCK);
+}
+
 
 class Piece {
 
   constructor(shape, color) {
-    this.x = 3;
-    this.y = -2;
-
     this.shape = shape;
     this.color = color;
 
     this.state = 0;
     this.curState = this.shape[this.state];
 
+    // this.x = 3;
+    this.y = -2;
+    //check for square initial x
+    this.shape.length == 1 ? this.x = 4 : this.x = 3;
   }
 
   draw(color, blockBorder){
-    for( r = 0; r < this.curState.length; r++){
+    for(r = 0; r < this.curState.length; r++){
       for(c = 0; c < this.curState.length; c++){
         if(this.curState[r][c]){
             drowBlock(this.x + c, this.y + r, color, blockBorder);
@@ -307,13 +320,8 @@ class Piece {
 
   drop(){
     while(!this.collision(0,1,this.curState)){
-      if(!this.collision(0,1,this.curState)){
-        this.remove();
-        this.y += 0.1;
-      }else{
-        this.lock();
-        currentPiece = getTetromino();
-      }
+      this.remove();
+      this.y += 0.1;
     }
     this.lock();
     currentPiece = getTetromino();
@@ -377,7 +385,6 @@ class Piece {
     for(r = 0; r < this.curState.length; r++){
       for(c = 0; c < this.curState.length; c++){
         if(gameOver){
-          // board[this.y + r][this.x + c] = this.color;
           best = Math.max(best, score);
           bestScore.innerHTML = best;
           localStorage.setItem('highScore', best);
@@ -385,8 +392,7 @@ class Piece {
           KOROBEINIKI.pause();
           velocityBar.disabled = false;
           velocity = level.innerHTML = velocityBar.value;
-          alert('Game Over');
-          // play();
+          window.requestAnimationFrame(overMessage);
           break;
         }
        
@@ -427,7 +433,7 @@ class Piece {
 
       }
     }
-    console.log(mult);
+    // console.log(mult);
     if(mult){
       score += 100 * 2**(mult-1);
       // console.log(score);
@@ -442,9 +448,13 @@ class Piece {
 }
 
 
-document.addEventListener('keydown', move);
+document.addEventListener('keydown', (e) => {
+  if(!gameOver) move(e);
+});
 
 function move(e) {
+  // console.log(gameOver);
+  
     switch (e.key) {
         case 'ArrowLeft':
             currentPiece.left();
@@ -471,9 +481,6 @@ function move(e) {
 let currentPiece = getTetromino();
 
 let start = Date.now();
-let gameOver = false;
-let firstTry = true;
-let levelTimer;
 
 function init() {
   let now = Date.now();
@@ -504,6 +511,7 @@ function play() {
     
     firstTry = false;
     gameOver = false;
+
     score = 0;
     curScore.innerHTML = score;
     resetBoard();

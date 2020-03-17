@@ -21,9 +21,14 @@
             border: solid 2px;
         }
 
-        .play-button {
+        button {
+            display: block;
             font-size: 16px;
             padding: 15px 30px;
+            width: auto;
+            text-align: center;
+            width: 100%;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -39,7 +44,10 @@
             <label for="velocity">Initial level (from 1 to 10):</label>
             <input type="range" id="velocity" name="velocity" min="1" max="10">
           </div>
-          <button onclick="play()" class="play-button">Play</button>
+          <div>
+            <!-- <button id="pause" class="pause-button">Pause</button> -->
+            <button onclick="play()" class="play-button">Play</button>
+          </div>
         </div>
       </div>
     <script src="script.js"></script>
