@@ -185,6 +185,7 @@ let score = 0;
 let best = localStorage.getItem('highScore');
 let reset;
 let velocity;
+let velocityIdle;
 let gameOver = false;
 let firstTry = true;
 let frame;
@@ -205,11 +206,11 @@ canvas.width = COLS * BLOCK;
 canvas.height = ROWS * BLOCK;
 
 nextCanvas.width = 4 * BLOCK;
-nextCanvas.height = 4 * BLOCK;
+nextCanvas.height = 2 * BLOCK;
 
-velocity = level.innerHTML = velocityBar.value = 1;
+velocityIdle = velocity = level.innerHTML = velocityBar.value = 1;
 velocityBar.addEventListener('input', () => {
-  velocity = level.innerHTML = velocityBar.value;
+  velocityIdle = velocity = level.innerHTML = velocityBar.value;
 });
 
 
@@ -326,6 +327,12 @@ class Piece {
     }
   }
 
+  fall(){
+    this.y += 0.1;
+    velocity = 20;
+    this.down();
+  }
+
   drop(){
     while(!this.collision(0,1,this.curState)){
       this.remove();
@@ -401,7 +408,7 @@ class Piece {
           clearInterval(levelTimer);
           KOROBEINIKI.pause();
           velocityBar.disabled = false;
-          velocity = level.innerHTML = velocityBar.value;
+          velocityIdle = velocity = level.innerHTML = velocityBar.value;
           window.requestAnimationFrame(overMessage);
           break;
         }
@@ -465,28 +472,43 @@ document.addEventListener('keydown', (e) => {
 
 function move(e) {
   // console.log(gameOver);
-  
-    switch (e.key) {
-        case 'ArrowLeft':
-            currentPiece.left();
-            break;
-        
-        case 'ArrowRight':
-            currentPiece.right();
-            break;
+  // console.log(e);
 
-        case 'ArrowUp':
-            currentPiece.rotate();
-            break;
+  switch (e.code) {
+    case 'ArrowLeft':
+      currentPiece.left();
+      break;
 
-        case 'ArrowDown':
-            currentPiece.drop();
-            break;
+    case 'ArrowRight':
+      currentPiece.right();
+      break;
 
-        default:
-            break;
-    }
-    e.preventDefault();
+    case 'ArrowUp':
+      currentPiece.rotate();
+      break;
+
+    case 'ArrowDown':
+      currentPiece.fall();
+      break;
+
+    case 'Space':
+      currentPiece.drop();
+      break;
+
+    default:
+      break;
+  }
+  e.preventDefault();
+}
+
+document.addEventListener('keyup', (e) => {
+  if(!firstTry && !gameOver && !gamePaused) stopFall(e);
+});
+
+function stopFall(e) {
+  if(e.code == 'ArrowDown'){
+    velocity = velocityIdle;
+  }
 }
 
 
@@ -571,9 +593,10 @@ muteBtn.addEventListener('click', () => {
 
 
 function speedUp() {
-  if(velocity <= 10){
+  if(velocity < 20){
     velocity++;
-    level.innerHTML = velocity;
+    velocityIdle = velocity;
+    level.innerHTML = velocityIdle;
   }
 }
 
