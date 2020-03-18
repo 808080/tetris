@@ -150,13 +150,13 @@ const tetrominoes = [
 ];
 
 const colors = [
-  '#00fdff',
-  '#f00',
-  '#f0f',
-  '#00f',
-  '#ffff00',
-  '#00ff00',
-  '#ff8000'
+  '#f148fb',
+  '#ff2281',
+  '#7122fa',
+  '#011ffd',
+  '#560a86',
+  '#13ca91',
+  '#ff9472'
 ];
 const empty = '#fff';
 const blockBorder = '#ccc';
@@ -600,31 +600,49 @@ function speedUp() {
   }
 }
 
-function play() {
-  if(!firstTry && !gameOver){
-    reset = confirm('Reset?');
+let interupt = false;
+function stop() {
+  if(!firstTry && !interupt){
+    interupt = confirm('Finish current game?');
   }
-  if(gameOver || firstTry || reset){
+  if(interupt){
+    interupt = true;
     gamePaused = false;
+    pauseBtn.innerHTML = 'Pause';
+  
     cancelAnimationFrame(frame);
-
-    velocityBar.disabled = true;
+  
+    KOROBEINIKI.pause();
     KOROBEINIKI.currentTime = 0;
-    KOROBEINIKI.play();
-
+  
     clearInterval(levelTimer);
-    levelTimer = setInterval(() => {
-      if(!gamePaused) speedUp();
-    }, 30000);
     
-    firstTry = false;
     gameOver = false;
-
+    velocityBar.disabled = false;
+  
     score = 0;
     curScore.innerHTML = score;
     resetBoard();
-    getTetromino();
+  }
+}
 
+function play() {
+  if(!firstTry && !gameOver){
+    interupt = true;
+    reset = confirm('Reset?');
+    if(!reset) interupt = false;
+  }
+  if(gameOver || firstTry || reset){
+    stop();
+    interupt = false;
+    firstTry = false;
+
+    velocityBar.disabled = true;
+    levelTimer = setInterval(() => {
+      if(!gamePaused) speedUp();
+    }, 30000);
+    KOROBEINIKI.play();
+    getTetromino();
     init();
   }
 }

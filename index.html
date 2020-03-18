@@ -19,6 +19,9 @@
         #board{
             border: solid 2px;
         }
+        p, label{
+          font-family: Arial, Helvetica, sans-serif;
+        }
         
         button {
             display: block;
@@ -28,11 +31,83 @@
             text-align: center;
             width: 100%;
             margin: 10px 0;
+            color: white;
+            cursor: pointer;
+            transition: .3s;
+            outline: none;
         }
         .mute-button{
           float: right;
           padding: 7px;
           width: auto;
+          background-color: #befac0;
+          border-radius: 7px;
+        }
+
+
+
+        .pause-button{
+          border: solid 1px #bdba20;
+          background-color: #bdba20;
+        }
+        .pause-button:hover{
+          background-color: #faf88f;
+          color: #929023;
+        }
+
+        .play-button{
+          border: solid 1px #4CAF50;
+          background-color: #4CAF50;
+        }
+        .play-button:hover{
+          background-color: #befac0;
+          color: #004b02;
+        }
+
+        .stop-button{
+          border: solid 1px #c73030;
+          background-color: #c73030;
+        }
+        .stop-button:hover{
+          background-color: #ffb3b3;
+          color: #942e2e;
+        }
+
+        #velocity {
+          -webkit-appearance: none;
+          width: 100%;
+          height: 5px;
+          padding: 0;
+          border-radius: 5px;
+          background: #d3d3d3;
+          outline: none;
+          opacity: 0.7;
+          -webkit-transition: .3s;
+          transition: .3s;
+          margin: 15px 0;
+        }
+
+        #velocity:hover:enabled {
+          opacity: 1;
+          height: 10px;
+        }
+
+        #velocity::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          background: #4CAF50;
+          cursor: pointer;
+        }
+
+        #velocity::-moz-range-thumb {
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          background: #4CAF50;
+          cursor: pointer;
         }
     </style>
 </head>
@@ -54,6 +129,7 @@
           <div>
             <button id="pause" class="pause-button">Pause</button>
             <button onclick="play()" class="play-button">Play</button>
+            <button onclick="stop()" class="stop-button">Stop</button>
           </div>
         </div>
       </div>
